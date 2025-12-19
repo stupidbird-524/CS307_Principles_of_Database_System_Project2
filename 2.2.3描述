@@ -1,0 +1,51 @@
+2. Database Design and Implementation
+
+2.1 Table Design Description Our database schema is designed to ensure Third Normal Form (3NF) normalization while maintaining the integrity of complex relationships. It consists of 14 tables categorized into three groups:
+
+A. Core Entity Tables:
+
+users: Stores author profiles including credentials, gender, and age.
+
+recipes: The central table storing meal metadata such as preparation time and descriptions.
+
+nutrition: A standalone table linked 1:1 to recipes to store detailed nutritional facts without cluttering the main recipe table.
+
+reviews: Records user ratings and comments on specific recipes.
+
+roles: Manages system access levels (e.g., USER, ADMIN).
+
+ingredients, categories, keywords: Lookup tables for reusable recipe attributes.
+
+B. Relationship (Join) Tables (Many-to-Many): To resolve M:N relationships, we implemented dedicated associative tables:
+
+recipeingredients: Connects recipes and ingredients, including a quantity column to specify the amount needed.
+
+userfollows: A self-referencing table for the social graph (followers and following).
+
+userfavorites: Tracks which recipes users have bookmarked.
+
+recipecategories & recipekeywords: Maps recipes to their respective tags and categories.
+
+reviewlikes: Records which users have liked specific reviews.
+
+2.2 Column Design Rationale The following data types and constraints were selected to ensure performance and accuracy:
+
+BIGINT: Used for all Primary Keys (e.g., author_id, recipe_id) to accommodate the large dataset provided for the benchmark.
+
+TIMESTAMPTZ: Used for all temporal fields (e.g., date_published) to ensure time-zone-aware data storage.
+
+NUMERIC / REAL: Used for nutritional values and quantities to maintain precision for floating-point data.
+
+Constraints: NOT NULL is applied to critical fields like author_name, while ON DELETE CASCADE is used on Foreign Keys to ensure referential integrity when a parent record is removed.
+
+2.3 User Creation and Privilege Descriptions Following the Principle of Least Privilege, we created a dedicated non-superuser for application development instead of using the default postgres account.
+
+SQL for User Creation: CREATE USER "12410724" WITH PASSWORD '12410724';
+
+Privilege Description: We granted the user full control only over the target database to prevent unauthorized access to the rest of the database server.
+
+Database Access: GRANT ALL PRIVILEGES ON DATABASE postgres TO "12410724";
+
+Schema Access: GRANT ALL ON SCHEMA public TO "12410724";
+
+This configuration ensures that the Java application can perform all necessary importData operations and Benchmark tests while remaining isolated and secure.
